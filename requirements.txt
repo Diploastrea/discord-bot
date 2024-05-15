@@ -1,0 +1,7 @@
+discord.py
+opencv-python~=4.9.0.80
+numpy~=1.26.4
+pillow~=10.3.0
+python-dotenv~=1.0.1
+deep-translator
+multipledispatch~=1.0.0
