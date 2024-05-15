@@ -1,8 +1,11 @@
 import os
 import random
+from io import BytesIO
 
 import cv2
 import numpy as np
+from PIL import Image
+from discord import File, Embed
 from multipledispatch import dispatch
 
 
@@ -34,6 +37,18 @@ def get_random_hero(folder_path):
         return None
 
 
+def stitch_images(images):
+    random_number = random.randint(1, 100000)
+    random_i = random.randint(0, 9)
+
+    if random_number == 1:
+        img = cv2.imread('images/gduck.png')
+        img = cv2.resize(img, (100, 100))
+        images[random_i] = img
+
+    return create_collage(images, 2, 5)
+
+
 @dispatch(list, int)
 def create_collage(images, rows=3):
     collage_width = 0
@@ -55,18 +70,6 @@ def create_collage(images, rows=3):
         y += image_heights[i]
         x = 0
     return collage
-
-
-def stitch_images(images):
-    random_number = random.randint(1, 100000)
-    random_i = random.randint(0, 9)
-
-    if random_number == 1:
-        img = cv2.imread('images/gduck.png')
-        img = cv2.resize(img, (100, 100))
-        images[random_i] = img
-
-    return create_collage(images, 2, 5)
 
 
 @dispatch(list, int, int)
@@ -91,3 +94,19 @@ def is_not_leadership(roles, leadership_role_id):
         if role.id == leadership_role_id:
             return False
     return True
+
+
+def create_embed(images, title, text, message):
+    summons = stitch_images(images)
+    summons = cv2.cvtColor(summons, cv2.COLOR_BGR2RGB)
+    img = Image.fromarray(summons)
+
+    img_bytes = BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+
+    file = File(img_bytes, 'summon.png')
+    embed = Embed(title=title)
+    embed.set_image(url='attachment://summon.png')
+    embed.set_footer(text=text, icon_url=message.author.display_avatar.url)
+    return file, embed

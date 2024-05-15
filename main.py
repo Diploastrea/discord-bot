@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from allsummon import all_summon
 from celhyposummon import celhypo_summon
 from factionsummon import faction_summon
-from utils import stitch_images, create_collage, is_not_leadership
+from utils import create_collage, is_not_leadership, create_embed
 from wokesummon import woke_summon
 
 COUNTING_CHANNEL_ID = 1227777390340739142
@@ -139,22 +139,9 @@ async def on_message(message):
         if command[1] not in celhypos:
             return
 
-        title = 'Stargaze'
         images = celhypo_summon(celhypo_pity, message.author.name, command[1])
-
-        summons = stitch_images(images)
-        summons = cv2.cvtColor(summons, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(summons)
-
-        img_bytes = BytesIO()
-        img.save(img_bytes, format='PNG')
-        img_bytes.seek(0)
-
-        file = File(img_bytes, 'summon.png')
-        embed = Embed(title=title)
-        embed.set_image(url='attachment://summon.png')
-        embed.set_footer(text=f'Stargazed by {message.author.name}', icon_url=message.author.display_avatar.url)
-
+        text = f'Stargazed by {message.author.name}'
+        file, embed = create_embed(images=images, title='Stargaze', text=text, message=message)
         await message.channel.send(file=file, embed=embed)
 
     if command[0] == '!summon':
@@ -168,19 +155,8 @@ async def on_message(message):
         else:
             return
 
-        summons = stitch_images(images)
-        summons = cv2.cvtColor(summons, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(summons)
-
-        img_bytes = BytesIO()
-        img.save(img_bytes, format='PNG')
-        img_bytes.seek(0)
-
-        file = File(img_bytes, 'summon.png')
-        embed = Embed(title=title)
-        embed.set_image(url='attachment://summon.png')
-        embed.set_footer(text=f'Summoned by {message.author.name}', icon_url=message.author.display_avatar.url)
-
+        text = f'Summoned by {message.author.name}'
+        file, embed = create_embed(images=images, title=title, text=text, message=message)
         await message.channel.send(file=file, embed=embed)
 
     if command[0] == '!tg' and (len(command) == 2):
@@ -188,22 +164,9 @@ async def on_message(message):
         if command[1] not in wokes:
             return
 
-        title = 'Timegaze'
         images = woke_summon(woke_pity, message.author.name, command[1])
-
-        summons = stitch_images(images)
-        summons = cv2.cvtColor(summons, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(summons)
-
-        img_bytes = BytesIO()
-        img.save(img_bytes, format='PNG')
-        img_bytes.seek(0)
-
-        file = File(img_bytes, 'summon.png')
-        embed = Embed(title=title)
-        embed.set_image(url='attachment://summon.png')
-        embed.set_footer(text=f'Timegazed by {message.author.name}', icon_url=message.author.display_avatar.url)
-
+        text = f'Timegazed by {message.author.name}'
+        file, embed = create_embed(images=images, title='Timegaze', text=text, message=message)
         await message.channel.send(file=file, embed=embed)
 
     if command[0] == '!stam' and (len(command) == 2):
