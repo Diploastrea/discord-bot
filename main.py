@@ -268,5 +268,17 @@ async def on_message(message):
         await message.delete()
         await msg.edit(view=RecruitmentView())
 
+    if command[0] == '!close' and len(command) == 1:
+        if is_not_leadership(message.author.roles,
+                             LEADERSHIP_ROLE_ID) or message.channel.category_id != RECRUITMENT_CATEGORY_ID:
+            return
+
+        await message.delete()
+
+        title = 'Closing application...'
+        embed = Embed(title=title, colour=Colour.dark_green())
+        msg = await message.channel.send(embed=embed)
+        await msg.edit(view=ApplicationView())
+
 
 client.run(token)
