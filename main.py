@@ -77,9 +77,6 @@ class ApplicationView(discord.ui.View):
     @discord.ui.button(label='Close application', custom_id='button-close', style=ButtonStyle.danger)
     async def close(self, interaction, button):
         await interaction.response.defer()
-        if is_not_leadership(interaction.user.roles, LEADERSHIP_ROLE_ID):
-            return
-
         app_channel = client.get_channel(interaction.channel.id)
         embed_message = 'Are you sure you want to close the application? This action will delete the channel and ' \
                         'cannot be reversed.'
