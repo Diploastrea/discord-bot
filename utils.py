@@ -8,6 +8,8 @@ from PIL import Image
 from discord import File, Embed
 from multipledispatch import dispatch
 
+NIHILUM_GUILD_ID = 716766135068131468
+
 
 def check_pity(pity, name, max_pity):
     if name not in pity:
@@ -110,3 +112,24 @@ def create_embed(images, title, text, message):
     embed.set_image(url='attachment://summon.png')
     embed.set_footer(text=text, icon_url=message.author.display_avatar.url)
     return file, embed
+
+
+def deterministic_casefold(s):
+    return s.casefold(), s
+
+
+def create_member_list_by_role_id(client, role_id):
+    members = client.get_guild(NIHILUM_GUILD_ID).get_role(role_id).members
+    members_dict = dict()
+    for member in members:
+        ign_name = member.display_name
+        if '|' in ign_name:
+            ign_name = ign_name[0:ign_name.index('|')].strip()
+        members_dict[ign_name] = member.name
+    names = sorted(members_dict.keys(), key=deterministic_casefold)
+
+    member_list = '```'
+    for name in names:
+        member_list += f'{name} (@{members_dict[name]})\n'
+    member_list += '```'
+    return member_list

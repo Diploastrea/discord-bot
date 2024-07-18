@@ -7,28 +7,31 @@ import discord
 import numpy as np
 from deep_translator import GoogleTranslator
 from discord import Colour, Embed, File, Intents, ButtonStyle, PermissionOverwrite
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.utils import get
 from PIL import Image
-from io import BytesIO
+from io import BytesIO, StringIO
 
 from dotenv import load_dotenv
 from allsummon import all_summon
 from celhyposummon import celhypo_summon
 from factionsummon import faction_summon
-from utils import create_collage, is_not_leadership, create_embed
+from utils import create_collage, is_not_leadership, create_embed, create_member_list_by_role_id
 from wokesummon import woke_summon
 
 COUNTING_CHANNEL_ID = 1227777390340739142
-LEADERSHIP_ROLE_ID = 1151356225859092510
-# 1238970123814178977 tavern
-# 1151356225859092510 nihi
 RECRUITMENT_CHANNEL_ID = 850621029109071872
-# 1238958205057630350 tavern
-# 850621029109071872 nihi
 RECRUITMENT_CATEGORY_ID = 1238168650901487646
-# 1238887499770761237 tavern
-# 1238168650901487646 nihi
+MEMBER_LIST_CHANNEL_ID = 1262766916498493521
+LEADERSHIP_ROLE_ID = 1151356225859092510
+EX_ROLE_ID = 910190431223029820
+RE_ROLE_ID = 1087445101741080616
+CO_ROLE_ID = 949083766880620554
+AD_ROLE_ID = 910190535304699944
+EX_MSG_ID = 1262777693598912573
+RE_MSG_ID = 1262777695700389913
+CO_MSG_ID = 1262777697818640395
+AD_MSG_ID = 1262777699802415114
 
 client = commands.Bot(command_prefix='!', intents=Intents.all())
 langs_dict = GoogleTranslator().get_supported_languages(as_dict=True)
@@ -119,9 +122,33 @@ class RecruitmentView(discord.ui.View):
         await message.edit(view=ApplicationView())
 
 
+@tasks.loop(minutes=15)
+async def update_member_list():
+    ex_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(EX_MSG_ID)
+    message = '# Ex Nihilum\n'
+    message += create_member_list_by_role_id(client, EX_ROLE_ID)
+    await ex_list.edit(content=message)
+
+    re_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(RE_MSG_ID)
+    message = '# Re Nihilum\n'
+    message += create_member_list_by_role_id(client, RE_ROLE_ID)
+    await re_list.edit(content=message)
+
+    co_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(CO_MSG_ID)
+    message = '# Co Nihilum\n'
+    message += create_member_list_by_role_id(client, CO_ROLE_ID)
+    await co_list.edit(content=message)
+
+    ad_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(AD_MSG_ID)
+    message = '# Ad Nihilum\n'
+    message += create_member_list_by_role_id(client, AD_ROLE_ID)
+    await ad_list.edit(content=message)
+
+
 @client.event
 async def on_ready():
     client.add_view(RecruitmentView())
+    update_member_list.start()
     print('We have logged in as {0.user}'.format(client))
 
 
@@ -266,8 +293,7 @@ async def on_message(message):
         await msg.edit(view=RecruitmentView())
 
     if command[0] == '!close' and len(command) == 1:
-        if is_not_leadership(message.author.roles,
-                             LEADERSHIP_ROLE_ID) or message.channel.category_id != RECRUITMENT_CATEGORY_ID:
+        if message.channel.category_id != RECRUITMENT_CATEGORY_ID:
             return
 
         await message.delete()
