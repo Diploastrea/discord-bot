@@ -113,13 +113,20 @@ class RecruitmentView(discord.ui.View):
                                                   overwrites=overwrites)
 
         message = f'{user.mention} Welcome! Please give yourself a short introduction and post screenshots of your ' \
-                  f'box (sorted by factions), pets, tree and rank plates. Also please specify which guild branch ' \
-                  'you\'d like to join if you have a preference.'
+                  'box (sorted by factions), pets, tree, collections and rank plates as shown in example collage ' \
+                  'below. If you have a preference, please specify which guild branch you\'d like to join.'
         embed_message = f'If you pass the pre-requisites, admins will contact you for follow-up questions and give ' \
                         f'you further instructions on joining. We admins are not robots, but we will do our best to ' \
                         f'reply to you in a timely manner.'
+
+        img = Image.open('images/collage.jpg')
+        img_bytes = BytesIO()
+        img.save(img_bytes, format='PNG')
+        img_bytes.seek(0)
+        file = File(img_bytes, 'summon.png')
+
         embed = Embed(description=embed_message, colour=Colour.dark_green())
-        message = await channel.send(message, embed=embed)
+        message = await channel.send(message, file=file, embed=embed)
         await message.edit(view=ApplicationView())
 
 
