@@ -1,43 +1,27 @@
 import os
 import random
 from datetime import datetime
+from typing import List, Iterable
 
 import cv2
 import discord
 import numpy as np
 from deep_translator import GoogleTranslator
-from discord import Colour, Embed, File, Intents, ButtonStyle, PermissionOverwrite
+from discord import Colour, Embed, File, Intents, app_commands
 from discord.ext import commands, tasks
-from discord.utils import get
 from PIL import Image
-from io import BytesIO, StringIO
+from io import BytesIO
 
 from dotenv import load_dotenv
 from allsummon import all_summon
 from celhyposummon import celhypo_summon
+from constants import COUNTING_CHANNEL_ID, LEADERSHIP_ROLE_ID, RECRUITMENT_CHANNEL_ID, RECRUITMENT_CATEGORY_ID
 from factionsummon import faction_summon
-from utils import create_collage, is_not_leadership, create_embed, create_member_list_by_role_id
+from utils import create_collage, is_not_leadership, create_embed
+from views.CollageView import CollageView
+from views.RecruitmentView import RecruitmentView
+from views.ApplicationView import ApplicationView
 from wokesummon import woke_summon
-
-COUNTING_CHANNEL_ID = 1227777390340739142
-RECRUITMENT_CHANNEL_ID = 850621029109071872
-RECRUITMENT_CATEGORY_ID = 1238168650901487646
-MEMBER_LIST_CHANNEL_ID = 1262766916498493521
-LEADERSHIP_ROLE_ID = 1151356225859092510
-EX_ROLE_ID = 910190431223029820
-RE_ROLE_ID = 1087445101741080616
-CO_ROLE_ID = 949083766880620554
-AD_ROLE_ID = 910190535304699944
-EX_MSG_ID = 1262777693598912573
-RE_MSG_ID = 1262777695700389913
-CO_MSG_ID = 1262777697818640395
-AD_MSG_ID = 1262777699802415114
-
-client = commands.Bot(command_prefix='!', intents=Intents.all())
-langs_dict = GoogleTranslator().get_supported_languages(as_dict=True)
-
-load_dotenv()
-token = os.getenv('TOKEN')
 
 all_pity = dict()
 faction_pity = dict()
@@ -55,108 +39,50 @@ messages = ['It\'s your lucky day {}-chan! I\'ve come to help with your counting
             'Roses are red, violets are blue, I\'m here to count with you {}-senpai!',
             'Hey there, {}-san! Let\'s do some math together and make Pythagoras-senpai proud!']
 
+client = commands.Bot(command_prefix='/', intents=Intents.all(), description='Quack!')
 
-class ConfirmView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.value = None
-
-    @discord.ui.button(label='Confirm', custom_id='button-confirm', style=ButtonStyle.primary)
-    async def confirm(self, interaction, button):
-        await interaction.channel.delete()
-        await interaction.response.defer()
-
-    @discord.ui.button(label='Cancel', custom_id='button-cancel', style=ButtonStyle.danger)
-    async def cancel(self, interaction, button):
-        await interaction.message.delete()
-        await interaction.response.defer()
+langs_dict = GoogleTranslator().get_supported_languages(as_dict=True)
+load_dotenv()
+token = os.getenv('TOKEN')
 
 
-class ApplicationView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.value = None
+# @client.tree.command(name='stitch', description='Creates a collage from attached images.',
+#                      guild=discord.Object(id=1173729379415752734))
+# @app_commands.describe(message='Text content for collage', width='Number of images per row (default 3)')
+# async def stitch(interaction, message: str = '', width: int = 3):
+    # title = 'Image stitch'
+    #
+    # images = []
+    # for attachment in [attachments]:
+    #     content_type = attachment.content_type
+    #     if content_type.endswith('jpeg') or content_type.endswith('png'):
+    #         image_bytes = await attachment.read()
+    #         image = np.frombuffer(image_bytes, np.uint8)
+    #         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+    #         images.append(image)
+    #
+    # collage = create_collage(images, width)
+    # collage = cv2.cvtColor(collage, cv2.COLOR_BGR2RGB)
+    # img = Image.fromarray(collage)
+    #
+    # img_bytes = BytesIO()
+    # img.save(img_bytes, format='PNG')
+    # img_bytes.seek(0)
+    # current_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    # filename = f'stitch-{current_timestamp}.png'
+    # file = File(img_bytes, filename)
+    #
+    # embed = Embed(title=title)
+    # embed.set_image(url=f'attachment://{filename}')
+    # embed.set_footer(text=f'Queried by {interaction.author.name}', icon_url=interaction.author.display_avatar.url)
 
-    @discord.ui.button(label='Close application', custom_id='button-close', style=ButtonStyle.danger)
-    async def close(self, interaction, button):
-        await interaction.response.defer()
-        app_channel = client.get_channel(interaction.channel.id)
-        embed_message = 'Are you sure you want to close the application? This action will delete the channel and ' \
-                        'cannot be reversed.'
-        embed = Embed(description=embed_message, colour=Colour.dark_green())
-
-        message = await app_channel.send(embed=embed)
-        await message.edit(view=ConfirmView())
-
-
-class RecruitmentView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.value = None
-
-    @discord.ui.button(label='Apply', custom_id='button-apply', style=ButtonStyle.success,
-                       emoji='<:poggers:1099095698688987177>')
-    async def apply(self, interaction, button):
-        guild = interaction.guild
-        user = interaction.user
-        recruit_category = get(guild.categories, id=RECRUITMENT_CATEGORY_ID)
-        admin_role = guild.get_role(LEADERSHIP_ROLE_ID)
-
-        overwrites = {
-            guild.default_role: PermissionOverwrite(read_messages=False),
-            guild.me: PermissionOverwrite(read_messages=True, send_messages=True),
-            user: PermissionOverwrite(read_messages=True, send_messages=True),
-            admin_role: PermissionOverwrite(read_messages=True, send_messages=True)
-        }
-        await interaction.response.defer()
-        channel = await guild.create_text_channel(f'{user.display_name} application', category=recruit_category,
-                                                  overwrites=overwrites)
-
-        message = f'{user.mention} Welcome! Please give yourself a short introduction and post screenshots of your ' \
-                  'box (sorted by factions), pets, tree, collections and rank plates as shown in example collage ' \
-                  'below. If you have a preference, please specify which guild branch you\'d like to join.'
-        embed_message = f'If you pass the pre-requisites, admins will contact you for follow-up questions and give ' \
-                        f'you further instructions on joining. We admins are not robots, but we will do our best to ' \
-                        f'reply to you in a timely manner.'
-
-        img = Image.open('images/collage.jpg')
-        img_bytes = BytesIO()
-        img.save(img_bytes, format='PNG')
-        img_bytes.seek(0)
-        file = File(img_bytes, 'summon.png')
-
-        embed = Embed(description=embed_message, colour=Colour.dark_green())
-        message = await channel.send(message, file=file, embed=embed)
-        await message.edit(view=ApplicationView())
-
-
-@tasks.loop(minutes=15)
-async def update_member_list():
-    ex_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(EX_MSG_ID)
-    message = '# Ex Nihilum\n'
-    message += create_member_list_by_role_id(client, EX_ROLE_ID)
-    await ex_list.edit(content=message)
-
-    re_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(RE_MSG_ID)
-    message = '# Re Nihilum\n'
-    message += create_member_list_by_role_id(client, RE_ROLE_ID)
-    await re_list.edit(content=message)
-
-    co_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(CO_MSG_ID)
-    message = '# Co Nihilum\n'
-    message += create_member_list_by_role_id(client, CO_ROLE_ID)
-    await co_list.edit(content=message)
-
-    ad_list = await client.get_channel(MEMBER_LIST_CHANNEL_ID).fetch_message(AD_MSG_ID)
-    message = '# Ad Nihilum\n'
-    message += create_member_list_by_role_id(client, AD_ROLE_ID)
-    await ad_list.edit(content=message)
+    # await interaction.response.send_message(message, view=CollageView(client, interaction.user))
 
 
 @client.event
 async def on_ready():
-    client.add_view(RecruitmentView())
-    update_member_list.start()
+    client.add_view(RecruitmentView(client))
+    await client.tree.sync(guild=discord.Object(id=1173729379415752734))
     print('We have logged in as {0.user}'.format(client))
 
 
@@ -166,6 +92,7 @@ async def on_message(message):
         return
 
     command = message.content.split(' ')
+
     if command[0] == '!sg' and (len(command) == 2):
         command[1] = command[1].lower()
         if command[1] not in celhypos:
@@ -237,9 +164,12 @@ async def on_message(message):
 
         await message.channel.send(embed=embed)
 
-    if command[0] == '!stitch' and len(command) <= 2:
-        title = 'Image stitch'
+    if command[0] == '!stitch':
+        if len(message.attachments) == 0:
+            await message.delete()
+            return
 
+        title = 'Image stitch'
         images = []
         for attachment in message.attachments:
             content_type = attachment.content_type
@@ -249,12 +179,15 @@ async def on_message(message):
                 image = cv2.imdecode(image, cv2.IMREAD_COLOR)
                 images.append(image)
 
-        if len(images) == 0:
-            await message.delete()
-            return
-
-        if len(command) == 2 and command[1].isnumeric():
-            collage = create_collage(images, int(command[1]))
+        collage = None
+        text = ''
+        if len(command) >= 2:
+            if command[1].isnumeric():
+                collage = create_collage(images, int(command[1]))
+                if len(command) > 2:
+                    text = ' '.join(command[2:])
+            else:
+                text = ' '.join(command[1:])
         else:
             collage = create_collage(images, 3)
         collage = cv2.cvtColor(collage, cv2.COLOR_BGR2RGB)
@@ -272,7 +205,7 @@ async def on_message(message):
         embed.set_footer(text=f'Queried by {message.author.name}', icon_url=message.author.display_avatar.url)
 
         await message.delete()
-        await message.channel.send(file=file, embed=embed)
+        await message.channel.send(text, file=file, embed=embed, view=CollageView(client, message.author))
 
     if command[0].isnumeric() and len(command) == 1 and message.channel.id == COUNTING_CHANNEL_ID:
         next_num = int(command[0]) + 1
@@ -293,12 +226,10 @@ async def on_message(message):
         title = 'Guild Applications'
         description = 'Welcome! To apply to the Nihilum Empire, please click the \'Apply\' button below!'
         embed = Embed(title=title, description=description, colour=Colour.dark_green())
-
         recruit_channel = client.get_channel(RECRUITMENT_CHANNEL_ID)
-        msg = await recruit_channel.send(embed=embed)
 
+        await recruit_channel.send(embed=embed, view=RecruitmentView(client))
         await message.delete()
-        await msg.edit(view=RecruitmentView())
 
     if command[0] == '!close' and len(command) == 1:
         if message.channel.category_id != RECRUITMENT_CATEGORY_ID:
@@ -308,8 +239,7 @@ async def on_message(message):
 
         title = 'Closing application...'
         embed = Embed(title=title, colour=Colour.dark_green())
-        msg = await message.channel.send(embed=embed)
-        await msg.edit(view=ApplicationView())
+        await message.channel.send(embed=embed, view=ApplicationView(client))
 
 
 client.run(token)
