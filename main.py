@@ -188,6 +188,7 @@ async def on_message(message):
                     text = ' '.join(command[2:])
             else:
                 text = ' '.join(command[1:])
+                collage = create_collage(images, 3)
         else:
             collage = create_collage(images, 3)
         collage = cv2.cvtColor(collage, cv2.COLOR_BGR2RGB)
