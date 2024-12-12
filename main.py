@@ -1,7 +1,6 @@
 import os
 import random
 from datetime import datetime
-from typing import List, Iterable
 
 import cv2
 import discord
@@ -82,7 +81,7 @@ token = os.getenv('TOKEN')
 @client.event
 async def on_ready():
     client.add_view(RecruitmentView(client))
-    await client.tree.sync(guild=discord.Object(id=1173729379415752734))
+    # await client.tree.sync(guild=discord.Object(id=1173729379415752734))
     print('We have logged in as {0.user}'.format(client))
 
 
@@ -90,6 +89,10 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+
+    if '5036e100' in message.content:
+        file = discord.File('images/robo.gif')
+        await message.channel.send(content='Did someone mention Robo?', file=file)
 
     command = message.content.split(' ')
 
