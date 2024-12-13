@@ -46,3 +46,4 @@ class RecruitmentView(discord.ui.View):
 
         embed = Embed(description=embed_message, colour=Colour.dark_green())
         await channel.send(message, file=file, embed=embed, view=ApplicationView(self.client))
+        await interaction.response.defer()

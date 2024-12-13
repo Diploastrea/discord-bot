@@ -11,6 +11,7 @@ class CollageView(discord.ui.View):
 
     @discord.ui.button(label='Delete', custom_id='azor:button-delete', style=ButtonStyle.danger)
     async def delete(self, interaction, button):
+        await interaction.response.defer()
         if interaction.user == self.user:
             await interaction.message.delete()
         else:

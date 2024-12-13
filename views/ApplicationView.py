@@ -19,3 +19,4 @@ class ApplicationView(discord.ui.View):
 
         message = await app_channel.send(embed=embed)
         await message.edit(view=ConfirmView())
+        await interaction.response.defer()
