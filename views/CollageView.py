@@ -9,7 +9,7 @@ class CollageView(discord.ui.View):
         self.client = client
         self.user = user
 
-    @discord.ui.button(label='Delete', custom_id='button-delete', style=ButtonStyle.danger)
+    @discord.ui.button(label='Delete', custom_id='azor:button-delete', style=ButtonStyle.danger)
     async def delete(self, interaction, button):
         if interaction.user == self.user:
             await interaction.message.delete()

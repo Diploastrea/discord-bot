@@ -18,6 +18,7 @@ from constants import COUNTING_CHANNEL_ID, LEADERSHIP_ROLE_ID, RECRUITMENT_CHANN
 from factionsummon import faction_summon
 from utils import create_collage, is_not_leadership, create_embed
 from views.CollageView import CollageView
+from views.ConfirmView import ConfirmView
 from views.RecruitmentView import RecruitmentView
 from views.ApplicationView import ApplicationView
 from wokesummon import woke_summon
@@ -76,6 +77,14 @@ token = os.getenv('TOKEN')
     # embed.set_footer(text=f'Queried by {interaction.author.name}', icon_url=interaction.author.display_avatar.url)
 
     # await interaction.response.send_message(message, view=CollageView(client, interaction.user))
+
+
+@client.event
+async def setup_hook():
+    client.add_view(ApplicationView(client))
+    client.add_view(CollageView(client, client.user))
+    client.add_view(ConfirmView())
+    client.add_view(RecruitmentView(client))
 
 
 @client.event

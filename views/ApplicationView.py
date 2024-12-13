@@ -10,7 +10,7 @@ class ApplicationView(discord.ui.View):
         super().__init__(timeout=None)
         self.client = client
 
-    @discord.ui.button(label='Close application', custom_id='button-close', style=ButtonStyle.danger)
+    @discord.ui.button(label='Close application', custom_id='azor:button-close', style=ButtonStyle.danger)
     async def close(self, interaction, button):
         app_channel = self.client.get_channel(interaction.channel.id)
         embed_message = 'Are you sure you want to close the application? This action will delete the channel and ' \

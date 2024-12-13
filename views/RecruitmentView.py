@@ -14,7 +14,7 @@ class RecruitmentView(discord.ui.View):
         super().__init__(timeout=None)
         self.client = client
 
-    @discord.ui.button(label='Apply', custom_id='button-apply', style=ButtonStyle.success,
+    @discord.ui.button(label='Apply', custom_id='azor:button-apply', style=ButtonStyle.success,
                        emoji='<:poggers:1099095698688987177>')
     async def apply(self, interaction, button):
         guild = interaction.guild
