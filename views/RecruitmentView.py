@@ -29,6 +29,7 @@ class RecruitmentView(discord.ui.View):
             admin_role: PermissionOverwrite(read_messages=True, send_messages=True)
         }
 
+        channel = None
         apps = recruit_category.channels[4:]
         app_exists = f'{user.name}-application' in [app.name for app in recruit_category.channels[4:]]
         if len(apps) > 0 and not app_exists:
