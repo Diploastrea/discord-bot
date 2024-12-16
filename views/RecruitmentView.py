@@ -28,8 +28,15 @@ class RecruitmentView(discord.ui.View):
             user: PermissionOverwrite(read_messages=True, send_messages=True),
             admin_role: PermissionOverwrite(read_messages=True, send_messages=True)
         }
-        channel = await guild.create_text_channel(f'{user.display_name} application', category=recruit_category,
-                                                  overwrites=overwrites)
+
+        apps = recruit_category.channels[4:]
+        app_exists = f'{user.name}-application' in [app.name for app in recruit_category.channels[4:]]
+        if len(apps) > 0 and not app_exists:
+            channel = await guild.create_text_channel(f'{user.name} application', category=recruit_category,
+                                                      overwrites=overwrites)
+        else:
+            await interaction.response.send_message(content='You can only create one application at a time.',
+                                                    ephemeral=True)
 
         message = f'{user.mention} Welcome! Please give yourself a short introduction and post screenshots of your ' \
                   'box (sorted by factions), pets, tree, collections and rank plates as shown in example collage ' \
