@@ -29,29 +29,26 @@ class RecruitmentView(discord.ui.View):
             admin_role: PermissionOverwrite(read_messages=True, send_messages=True)
         }
 
-        channel = None
-        apps = recruit_category.channels[4:]
         app_exists = f'{user.name}-application' in [app.name for app in recruit_category.channels[4:]]
-        if len(apps) > 0 and not app_exists:
+        if not app_exists:
+            await interaction.response.send_message("Your application has been created successfully.", ephemeral=True)
             channel = await guild.create_text_channel(f'{user.name} application', category=recruit_category,
                                                       overwrites=overwrites)
+            message = f'{user.mention} Welcome! Please give yourself a short introduction and post screenshots of your ' \
+                      'box (sorted by factions), pets, tree, collections and rank plates as shown in example collage ' \
+                      'below. If you have a preference, please specify which guild branch you\'d like to join.'
+            embed_message = f'If you pass the pre-requisites, admins will contact you for follow-up questions and give ' \
+                            f'you further instructions on joining. We admins are not robots, but we will do our best to ' \
+                            f'reply to you in a timely manner.'
+
+            img = Image.open('images/collage.jpg')
+            img_bytes = BytesIO()
+            img.save(img_bytes, format='PNG')
+            img_bytes.seek(0)
+            file = File(img_bytes, 'summon.png')
+
+            embed = Embed(description=embed_message, colour=Colour.dark_green())
+            await channel.send(message, file=file, embed=embed, view=ApplicationView(self.client))
         else:
             await interaction.response.send_message(content='You can only create one application at a time.',
                                                     ephemeral=True)
-
-        message = f'{user.mention} Welcome! Please give yourself a short introduction and post screenshots of your ' \
-                  'box (sorted by factions), pets, tree, collections and rank plates as shown in example collage ' \
-                  'below. If you have a preference, please specify which guild branch you\'d like to join.'
-        embed_message = f'If you pass the pre-requisites, admins will contact you for follow-up questions and give ' \
-                        f'you further instructions on joining. We admins are not robots, but we will do our best to ' \
-                        f'reply to you in a timely manner.'
-
-        img = Image.open('images/collage.jpg')
-        img_bytes = BytesIO()
-        img.save(img_bytes, format='PNG')
-        img_bytes.seek(0)
-        file = File(img_bytes, 'summon.png')
-
-        embed = Embed(description=embed_message, colour=Colour.dark_green())
-        await channel.send(message, file=file, embed=embed, view=ApplicationView(self.client))
-        await interaction.response.defer()

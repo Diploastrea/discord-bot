@@ -89,7 +89,6 @@ async def setup_hook():
 
 @client.event
 async def on_ready():
-    client.add_view(RecruitmentView(client))
     # await client.tree.sync(guild=discord.Object(id=1173729379415752734))
     print('We have logged in as {0.user}'.format(client))
 
