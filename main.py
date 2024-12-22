@@ -40,7 +40,6 @@ messages = ['It\'s your lucky day {}-chan! I\'ve come to help with your counting
             'Hey there, {}-san! Let\'s do some math together and make Pythagoras-senpai proud!']
 
 client = commands.Bot(command_prefix='/', intents=Intents.all(), description='Quack!')
-await client.user.edit(username='Azor\'s duck')
 
 langs_dict = GoogleTranslator().get_supported_languages(as_dict=True)
 load_dotenv()
@@ -57,6 +56,7 @@ async def setup_hook():
 
 @client.event
 async def on_ready():
+    await client.user.edit(username='Azor\'s duck')
     print('We have logged in as {0.user}'.format(client))
 
 
