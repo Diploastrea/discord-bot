@@ -6,8 +6,8 @@ import cv2
 import discord
 import numpy as np
 from deep_translator import GoogleTranslator
-from discord import Colour, Embed, File, Intents, app_commands
-from discord.ext import commands, tasks
+from discord import Colour, Embed, File, Intents
+from discord.ext import commands
 from PIL import Image
 from io import BytesIO
 
@@ -46,39 +46,6 @@ load_dotenv()
 token = os.getenv('TOKEN')
 
 
-# @client.tree.command(name='stitch', description='Creates a collage from attached images.',
-#                      guild=discord.Object(id=1173729379415752734))
-# @app_commands.describe(message='Text content for collage', width='Number of images per row (default 3)')
-# async def stitch(interaction, message: str = '', width: int = 3):
-    # title = 'Image stitch'
-    #
-    # images = []
-    # for attachment in [attachments]:
-    #     content_type = attachment.content_type
-    #     if content_type.endswith('jpeg') or content_type.endswith('png'):
-    #         image_bytes = await attachment.read()
-    #         image = np.frombuffer(image_bytes, np.uint8)
-    #         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-    #         images.append(image)
-    #
-    # collage = create_collage(images, width)
-    # collage = cv2.cvtColor(collage, cv2.COLOR_BGR2RGB)
-    # img = Image.fromarray(collage)
-    #
-    # img_bytes = BytesIO()
-    # img.save(img_bytes, format='PNG')
-    # img_bytes.seek(0)
-    # current_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    # filename = f'stitch-{current_timestamp}.png'
-    # file = File(img_bytes, filename)
-    #
-    # embed = Embed(title=title)
-    # embed.set_image(url=f'attachment://{filename}')
-    # embed.set_footer(text=f'Queried by {interaction.author.name}', icon_url=interaction.author.display_avatar.url)
-
-    # await interaction.response.send_message(message, view=CollageView(client, interaction.user))
-
-
 @client.event
 async def setup_hook():
     client.add_view(ApplicationView(client))
@@ -89,7 +56,6 @@ async def setup_hook():
 
 @client.event
 async def on_ready():
-    # await client.tree.sync(guild=discord.Object(id=1173729379415752734))
     print('We have logged in as {0.user}'.format(client))
 
 
