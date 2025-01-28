@@ -67,7 +67,7 @@ async def on_message(message):
 
     if '5036e100' in message.content:
         file = discord.File('images/robo.gif')
-        await message.channel.send(content='Did someone mention Robo?', file=file)
+        await message.channel.send(content='In Robo we believe <:pepepray:1087897738198401065>', file=file)
 
     command = message.content.split(' ')
 
