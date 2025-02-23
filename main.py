@@ -65,10 +65,6 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if '5036e100' in message.content:
-        file = discord.File('images/robo.gif')
-        await message.channel.send(content='In Robo we believe <:pepepray:1087897738198401065>', file=file)
-
     command = message.content.split(' ')
 
     if command[0] == '!sg' and (len(command) == 2):
