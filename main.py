@@ -35,10 +35,6 @@ celhypos = {'athalia', 'twins', 'orthros', 'talene', 'wukong', 'flora', 'zaphrae
             'mezoth', 'lucretia', 'mortas', 'leofric', 'zikis', 'framton', 'vyloris', 'cruke', 'olgath', 'lucilla',
             'lavatune'}
 
-messages = ['It\'s your lucky day {}-chan! I\'ve come to help with your counting ♡UωU♡',
-            'Roses are red, violets are blue, I\'m here to count with you {}-senpai!',
-            'Hey there, {}-san! Let\'s do some math together and make Pythagoras-senpai proud!']
-
 client = commands.Bot(command_prefix='/', intents=Intents.all(), description='Quack!')
 
 langs_dict = GoogleTranslator().get_supported_languages(as_dict=True)
@@ -186,13 +182,6 @@ async def on_message(message):
         next_num = int(command[0]) + 1
         if message.author.name == 'azorahai23':
             await message.channel.send(next_num)
-        elif random.randint(1, 50) == 1:
-            name = message.author.display_name
-            title = str(random.choice(messages)).format(name)
-            embed = Embed(title=title, description=next_num)
-            embed.set_footer(text=f'Queried by {message.author.name}', icon_url=message.author.display_avatar.url)
-
-            await message.channel.send(embed=embed)
 
     if command[0] == '!setup' and len(command) == 1:
         if is_not_leadership(message.author.roles, LEADERSHIP_ROLE_ID):
