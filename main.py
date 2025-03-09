@@ -151,25 +151,6 @@ async def on_message(message):
 
         await message.channel.send(embed=embed)
 
-    if command[0] == '!translate':
-        title = 'Translator'
-        msg = message.content.split(' ', 1)[1]
-        source = 'auto'
-        target = 'en'
-
-        if (command[1] in langs_dict or command[1] in langs_dict.values()) and (
-                command[2] in langs_dict or command[2] in langs_dict.values()):
-            source = command[1]
-            target = command[2]
-            msg = message.content.split(' ', 3)[3]
-
-        translated = GoogleTranslator(source=source, target=target).translate(msg)
-
-        embed = Embed(title=title, description=translated)
-        embed.set_footer(text=f'Queried by {message.author.name}', icon_url=message.author.display_avatar.url)
-
-        await message.channel.send(embed=embed)
-
     if command[0] == '!stitch':
         if len(message.attachments) == 0:
             await message.delete()
