@@ -1,12 +1,11 @@
 import os
-import random
 from datetime import datetime
 
 import cv2
 import discord
 import numpy as np
 from deep_translator import GoogleTranslator
-from discord import Colour, Embed, File, Intents
+from discord import Colour, Embed, File, Intents, app_commands
 from discord.ext import commands
 from PIL import Image
 from io import BytesIO
@@ -14,7 +13,8 @@ from io import BytesIO
 from dotenv import load_dotenv
 from allsummon import all_summon
 from celhyposummon import celhypo_summon
-from constants import COUNTING_CHANNEL_ID, LEADERSHIP_ROLE_ID, RECRUITMENT_CHANNEL_ID, RECRUITMENT_CATEGORY_ID
+from constants import COUNTING_CHANNEL_ID, LEADERSHIP_ROLE_ID, RECRUITMENT_CHANNEL_ID, RECRUITMENT_CATEGORY_ID, \
+    NIHILUM_GUILD_ID
 from factionsummon import faction_summon
 from utils import create_collage, is_not_leadership, create_embed
 from views.CollageView import CollageView
@@ -42,6 +42,42 @@ load_dotenv()
 token = os.getenv('TOKEN')
 
 
+@client.tree.command(name='translate',
+                     description='Translates provided text from one language to another. By default translates text '
+                                 'to English.',
+                     guild=discord.Object(id=NIHILUM_GUILD_ID))
+@app_commands.describe(text='Text to be translated', source='Source language (auto-detect by default)',
+                       target='Target language (English by default)')
+async def translate(interaction, text: str, source: str = '', target: str = ''):
+    if len(source) == 0:
+        source = 'auto'
+
+    if len(target) == 0:
+        target = 'en'
+
+    title = 'Translator'
+    translated = GoogleTranslator(source=source, target=target).translate(text)
+
+    embed = Embed(title=title, description=translated)
+    embed.set_footer(text=f'Queried by {interaction.user.name}', icon_url=interaction.user.display_avatar.url)
+
+    await interaction.response.send_message(embed=embed)
+
+
+@translate.autocomplete('source')
+async def source_autocomplete(interaction, current: str):
+    choices = [app_commands.Choice(name=language, value=langs_dict.get(language))
+               for language in langs_dict.keys() if current.lower() in language]
+    return choices[:25]
+
+
+@translate.autocomplete('target')
+async def source_autocomplete(interaction, current: str):
+    choices = [app_commands.Choice(name=language, value=langs_dict.get(language))
+               for language in langs_dict.keys() if current.lower() in language]
+    return choices[:25]
+
+
 @client.event
 async def setup_hook():
     client.add_view(ApplicationView(client))
@@ -52,7 +88,7 @@ async def setup_hook():
 
 @client.event
 async def on_ready():
-    await client.user.edit(username='Azor\'s duck')
+    await client.tree.sync(guild=discord.Object(id=NIHILUM_GUILD_ID))
     print('We have logged in as {0.user}'.format(client))
 
 

@@ -8,8 +8,6 @@ from PIL import Image
 from discord import File, Embed
 from multipledispatch import dispatch
 
-NIHILUM_GUILD_ID = 716766135068131468
-
 
 def check_pity(pity, name, max_pity):
     if name not in pity:
