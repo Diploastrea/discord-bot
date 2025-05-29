@@ -18,7 +18,8 @@ from constants import COUNTING_CHANNEL_ID, LEADERSHIP_ROLE_ID, RECRUITMENT_CHANN
 from factionsummon import faction_summon
 from utils import create_collage, is_not_leadership, create_embed
 from views.CollageView import CollageView
-from views.ConfirmView import ConfirmView
+from views.CreateAppConfirmView import CreateAppConfirmView
+from views.DeleteAppConfirmView import DeleteAppConfirmView
 from views.RecruitmentView import RecruitmentView
 from views.ApplicationView import ApplicationView
 from wokesummon import woke_summon
@@ -82,8 +83,9 @@ async def source_autocomplete(interaction, current: str):
 async def setup_hook():
     client.add_view(ApplicationView(client))
     client.add_view(CollageView(client, client.user))
-    client.add_view(ConfirmView())
+    client.add_view(DeleteAppConfirmView())
     client.add_view(RecruitmentView(client))
+    client.add_view(CreateAppConfirmView(client))
 
 
 @client.event

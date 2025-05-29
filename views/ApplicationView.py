@@ -2,7 +2,7 @@ import discord
 
 from discord import ButtonStyle, Colour, Embed
 
-from views.ConfirmView import ConfirmView
+from views.DeleteAppConfirmView import DeleteAppConfirmView
 
 
 class ApplicationView(discord.ui.View):
@@ -16,4 +16,4 @@ class ApplicationView(discord.ui.View):
                         'cannot be reversed.'
         embed = Embed(description=embed_message, colour=Colour.dark_green())
 
-        await interaction.response.send_message(embed=embed, view=ConfirmView(), ephemeral=True)
+        await interaction.response.send_message(embed=embed, view=DeleteAppConfirmView(), ephemeral=True)
