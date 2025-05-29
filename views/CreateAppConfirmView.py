@@ -44,7 +44,7 @@ class CreateAppConfirmView(discord.ui.View):
             img_bytes = BytesIO()
             img.save(img_bytes, format='PNG')
             img_bytes.seek(0)
-            file = File(img_bytes, 'summon.png')
+            file = File(img_bytes, 'collage.png')
 
             embed = Embed(description=embed_message, colour=Colour.dark_green())
             await channel.send(message, file=file, embed=embed, view=ApplicationView(self.client))

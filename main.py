@@ -220,7 +220,7 @@ async def on_message(message):
 
         await message.delete()
 
-        title = 'Closing application...'
+        title = 'Closing application'
         embed = Embed(title=title, colour=Colour.dark_green())
         await message.channel.send(embed=embed, view=ApplicationView(client))
 
