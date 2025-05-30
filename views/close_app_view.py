@@ -2,10 +2,10 @@ import discord
 
 from discord import ButtonStyle, Colour, Embed
 
-from views.DeleteAppConfirmView import DeleteAppConfirmView
+from views.delete_app_confirm_view import DeleteAppConfirmView
 
 
-class ApplicationView(discord.ui.View):
+class CloseAppView(discord.ui.View):
     def __init__(self, client):
         super().__init__(timeout=None)
         self.client = client

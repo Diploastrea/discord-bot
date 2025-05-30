@@ -3,7 +3,7 @@ import discord
 
 from discord import ButtonStyle, Embed, Colour
 
-from views.CreateAppConfirmView import CreateAppConfirmView
+from views.create_app_confirm_view import CreateAppConfirmView
 
 
 class RecruitmentView(discord.ui.View):

@@ -6,7 +6,7 @@ from PIL import Image
 from io import BytesIO
 
 from constants import RECRUITMENT_CATEGORY_ID, LEADERSHIP_ROLE_ID
-from views.ApplicationView import ApplicationView
+from views.close_app_view import CloseAppView
 
 
 class CreateAppConfirmView(discord.ui.View):
@@ -47,7 +47,7 @@ class CreateAppConfirmView(discord.ui.View):
             file = File(img_bytes, 'collage.png')
 
             embed = Embed(description=embed_message, colour=Colour.dark_green())
-            await channel.send(message, file=file, embed=embed, view=ApplicationView(self.client))
+            await channel.send(message, file=file, embed=embed, view=CloseAppView(self.client))
         else:
             await interaction.response.send_message(content='You can only create one application at a time.',
                                                     ephemeral=True)

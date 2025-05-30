@@ -5,3 +5,4 @@ pillow~=10.3.0
 python-dotenv~=1.0.1
 deep-translator
 multipledispatch~=1.0.0
+aiomysql
