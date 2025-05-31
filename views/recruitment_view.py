@@ -7,9 +7,8 @@ from views.create_app_confirm_view import CreateAppConfirmView
 
 
 class RecruitmentView(discord.ui.View):
-    def __init__(self, client):
+    def __init__(self):
         super().__init__(timeout=None)
-        self.client = client
 
     @discord.ui.button(label='Apply', custom_id='azor:button-apply', style=ButtonStyle.success,
                        emoji='<:poggers:1099095698688987177>')
@@ -18,4 +17,4 @@ class RecruitmentView(discord.ui.View):
                         'requirements before applying.'
         embed = Embed(description=embed_message, colour=Colour.dark_green())
 
-        await interaction.response.send_message(embed=embed, view=CreateAppConfirmView(self.client), ephemeral=True)
+        await interaction.response.send_message(embed=embed, view=CreateAppConfirmView(), ephemeral=True)

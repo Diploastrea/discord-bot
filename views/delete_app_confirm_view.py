@@ -10,4 +10,3 @@ class DeleteAppConfirmView(discord.ui.View):
     @discord.ui.button(label='Confirm', custom_id='azor:button-delete-app-confirm', style=ButtonStyle.primary)
     async def confirm(self, interaction, button):
         await interaction.channel.delete()
-        await interaction.response.defer()

@@ -10,9 +10,8 @@ from views.close_app_view import CloseAppView
 
 
 class CreateAppConfirmView(discord.ui.View):
-    def __init__(self, client):
+    def __init__(self):
         super().__init__(timeout=None)
-        self.client = client
 
     @discord.ui.button(label='Confirm', custom_id='azor:button-create-app-confirm', style=ButtonStyle.primary)
     async def confirm(self, interaction, button):
@@ -47,7 +46,7 @@ class CreateAppConfirmView(discord.ui.View):
             file = File(img_bytes, 'collage.png')
 
             embed = Embed(description=embed_message, colour=Colour.dark_green())
-            await channel.send(message, file=file, embed=embed, view=CloseAppView(self.client))
+            await channel.send(message, file=file, embed=embed, view=CloseAppView())
         else:
             await interaction.response.send_message(content='You can only create one application at a time.',
                                                     ephemeral=True)
