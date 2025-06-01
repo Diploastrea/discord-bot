@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
-from client import Client
+from bot import Bot
 
 
-client = Client()
+client = Bot()
 
 
 if __name__ == "__main__":

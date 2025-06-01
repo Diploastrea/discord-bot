@@ -16,7 +16,7 @@ class CloseAppCog(commands.Cog):
     async def close_app(self, interaction):
         if is_not_leadership(interaction.user.roles, LEADERSHIP_ROLE_ID):
             await self.send_error_message(
-                interaction, 'You do not have the rights to close the application, please contact leadership.')
+                interaction, 'You do not have the rights to close the application.')
             return
 
         if interaction.channel.category_id != RECRUITMENT_CATEGORY_ID:

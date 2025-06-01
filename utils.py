@@ -1,12 +1,14 @@
 import os
 import random
-from io import BytesIO
-
 import cv2
 import numpy as np
+from io import BytesIO
 from PIL import Image
 from discord import File, Embed
 from multipledispatch import dispatch
+from sqlalchemy import select, exists
+
+from models.Member import Member
 
 
 def check_pity(pity, name, max_pity):
@@ -110,3 +112,19 @@ def create_embed(images, title, text, message):
     embed.set_image(url='attachment://summon.png')
     embed.set_footer(text=text, icon_url=message.author.display_avatar.url)
     return file, embed
+
+
+async def member_exists(bot, discord_name):
+    async with bot.db_session() as session:
+        result = await session.execute(select(exists().where(Member.discord_name == discord_name)))
+
+    return result.scalar()
+
+
+def format_member_list(members):
+    result = ''
+    for member in members:
+        result += f'> **Discord name:** {member.discord_name}\n'
+        result += f'> **In-game name:** {member.ingame_name}\n'
+        result += f'> **Comment:** {member.comment}\n\n'
+    return result.strip()
