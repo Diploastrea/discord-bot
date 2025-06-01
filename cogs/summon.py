@@ -16,10 +16,12 @@ class SummonCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot or not message:
+        if message.author.bot:
             return
 
         command = message.content.split()
+        if len(command) == 0:
+            return
 
         if command[0] == '!summon':
             title = 'All summon'

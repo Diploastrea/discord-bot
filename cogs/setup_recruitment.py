@@ -13,10 +13,12 @@ class SetupCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot or not message:
+        if message.author.bot:
             return
 
         command = message.content.split()
+        if len(command) == 0:
+            return
 
         if command[0] == '!setup' and len(command) == 1:
             if is_not_leadership(message.author.roles, LEADERSHIP_ROLE_ID):
