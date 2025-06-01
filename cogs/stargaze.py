@@ -17,7 +17,7 @@ class StargazeCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot:
+        if message.author.bot or not message:
             return
 
         command = message.content.split()
