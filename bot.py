@@ -35,7 +35,7 @@ class Bot(commands.Bot):
         self.add_view(CreateAppConfirmView())
 
     async def setup_database(self):
-        self.db_engine = create_async_engine(os.getenv('DB_URL'), echo=True)
+        self.db_engine = create_async_engine(os.getenv('DB_URL'), echo=True, pool_pre_ping=True)
         self.db_session = async_sessionmaker(bind=self.db_engine, expire_on_commit=False)
 
         async with self.db_engine.begin() as conn:
