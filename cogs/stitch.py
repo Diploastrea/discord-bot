@@ -32,12 +32,13 @@ class StitchCog(commands.Cog):
             title = 'Image stitch'
             images = []
             for attachment in message.attachments:
-                content_type = attachment.content_type
-                if content_type.endswith('jpeg') or content_type.endswith('png'):
+                if attachment.content_type.startswith('image'):
                     image_bytes = await attachment.read()
                     image = np.frombuffer(image_bytes, np.uint8)
                     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
                     images.append(image)
+            if len(images) == 0:
+                return
 
             text = ''
             if len(command) >= 2:
