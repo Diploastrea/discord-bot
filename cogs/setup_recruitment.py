@@ -29,7 +29,7 @@ class SetupCog(commands.Cog):
             embed = Embed(title=title, description=description, colour=Colour.dark_green())
             recruit_channel = self.bot.get_channel(RECRUITMENT_CHANNEL_ID)
 
-            await recruit_channel.send(embed=embed, view=RecruitmentView(self))
+            await recruit_channel.send(embed=embed, view=RecruitmentView())
             await message.delete()
 
 
