@@ -5,7 +5,7 @@ from discord.utils import get
 from PIL import Image
 from io import BytesIO
 
-from constants import RECRUITMENT_CATEGORY_ID, LEADERSHIP_ROLE_ID
+from constants import RECRUITMENT_CATEGORY_ID, LEADERSHIP_ROLE_ID, RECRUITMENT_ROLE_ID
 from views.close_app_view import CloseAppView
 
 
@@ -19,12 +19,14 @@ class CreateAppConfirmView(discord.ui.View):
         user = interaction.user
         recruit_category = get(guild.categories, id=RECRUITMENT_CATEGORY_ID)
         admin_role = guild.get_role(LEADERSHIP_ROLE_ID)
+        recruitment_role = guild.get_role(RECRUITMENT_ROLE_ID)
 
         overwrites = {
             guild.default_role: PermissionOverwrite(read_messages=False),
             guild.me: PermissionOverwrite(read_messages=True, send_messages=True),
             user: PermissionOverwrite(read_messages=True, send_messages=True),
-            admin_role: PermissionOverwrite(read_messages=True, send_messages=True, manage_channels=True)
+            admin_role: PermissionOverwrite(read_messages=True, send_messages=True, manage_channels=True),
+            recruitment_role: PermissionOverwrite(read_messages=True, send_messages=True, manage_channels=True)
         }
 
         app_exists = f'{user.name}-application' in [app.name for app in recruit_category.channels[4:]]

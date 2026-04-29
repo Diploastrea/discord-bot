@@ -9,8 +9,6 @@ class StaminaCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        return
-
         if message.author.bot:
             return
 
